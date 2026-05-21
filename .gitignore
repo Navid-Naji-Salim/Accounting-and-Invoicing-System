@@ -47,3 +47,7 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Obsidian vault app metadata
+Obsidian Vault/.obsidian/
+Obsidian Vault/.trash/
