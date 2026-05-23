@@ -7,8 +7,8 @@
   --nav: #10233f;
   --nav-soft: rgba(255, 255, 255, 0.08);
   --nav-active: rgba(0, 183, 255, 0.34);
-  --accent: #00b7ff;
-  --accent-dark: #0096d6;
+  --accent: #2196f3;
+  --accent-dark: #1e88e5;
   --amber: #d97706;
   --red: #b91c1c;
   --shadow: 0 24px 70px rgba(30, 41, 59, 0.16);
@@ -203,7 +203,7 @@ textarea:focus {
   height: 44px;
   place-items: center;
   border-radius: 14px;
-  background: linear-gradient(135deg, #00b7ff, #7dd3fc);
+  background: linear-gradient(135deg, #2196f3, #7dd3fc);
   font-weight: 900;
 }
 
