@@ -12,14 +12,6 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
   return (
     <main className="login-shell">
       <section className="login-card">
-        <div className="login-brand">
-          <p className="eyebrow">Admin workspace</p>
-          <h1>Accounting with a calm command center.</h1>
-          <p>
-            A focused books system for managing the first foundations: items,
-            customers, and vendors.
-          </p>
-        </div>
         <form
           className="login-form"
           onSubmit={async (event) => {
@@ -40,10 +32,10 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
             }
           }}
         >
-          <div>
-            <p className="eyebrow">Secure access</p>
-            <h2>Admin login</h2>
-            <p className="muted">No signup is available. Admin credentials are configured on the server.</p>
+          <div className="login-heading">
+            <div className="login-mark">AB</div>
+            <h1>Accounting and Books System</h1>
+            <p className="muted">Manage your items, customers, and vendors from one focused workspace.</p>
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
