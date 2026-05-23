@@ -129,7 +129,7 @@ label {
 input,
 textarea {
   width: 100%;
-  border: 1px solid rgba(0, 183, 255, 0.22);
+  border: 1px solid var(--line);
   border-radius: 16px;
   padding: 0.9rem 1rem;
   color: var(--ink);
