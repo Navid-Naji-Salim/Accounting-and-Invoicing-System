@@ -1,14 +1,17 @@
-import express from "express";
-import cors from "cors";
+import { createApp } from "./app.js";
+import { env } from "./config/env.js";
+import { ensureAdminUser } from "./services/admin-bootstrap.js";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const startServer = async () => {
+  await ensureAdminUser();
 
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
-});
+  const app = createApp();
+  app.listen(env.port, () => {
+    console.log(`Accounting and Books System is running on http://localhost:${env.port}`);
+  });
+};
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+startServer().catch((error: unknown) => {
+  console.error("Failed to initialize the server.", error);
+  process.exit(1);
 });

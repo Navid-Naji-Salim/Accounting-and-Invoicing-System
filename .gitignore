@@ -7,6 +7,9 @@ build/
 coverage/
 *.tsbuildinfo
 
+# Generated application code
+backend/generated/
+
 # Environment files
 .env
 .env.*
