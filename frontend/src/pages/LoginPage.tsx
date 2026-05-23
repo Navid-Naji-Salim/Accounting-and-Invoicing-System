@@ -33,9 +33,7 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
           }}
         >
           <div className="login-heading">
-            <div className="login-mark">AB</div>
-            <h1>Accounting and Books System</h1>
-            <p className="muted">Manage your items, customers, and vendors from one focused workspace.</p>
+            <h1>XBooks</h1>
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>

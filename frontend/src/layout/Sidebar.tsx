@@ -18,10 +18,10 @@ type SidebarProps = {
 export const Sidebar = ({ admin, onLogout }: SidebarProps) => (
   <aside className="sidebar">
     <div className="brand">
-      <div className="brand-mark">AB</div>
+      <div className="brand-mark">A</div>
       <div>
-        <strong>Accounting Books</strong>
-        <span>Admin console</span>
+        <strong>Admin</strong>
+        <span>Administrator</span>
       </div>
     </div>
     <nav className="nav">
