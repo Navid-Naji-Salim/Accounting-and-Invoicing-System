@@ -1,14 +1,14 @@
 
-- Sign Up, Login, Authentication, Authorization
-- Database for storing everything
-- make sure to take security into consideration in some way shape or form, but there's no need for extreme depth in it as this is a smaller-scale application
+- Login, Authentication, Authorization - only for an admin
+- Database (postgreSQL + prisma)
 - adding, and extracting data
 - invoicing
-- adding modes to invoicing like: unpaid, some of it paid, and paid
-- services, products
-- customers
+- adding modes to invoicing like: unpaid, partially paid, and paid
+- be able to add services/products in the sales section/category of your accounting app.
+- be able to add customers
+- be able to add vendors
 - customer information
-- implementing money correctly
-- seller, buyer
+- vendor information
+- implementing money correctly (make it be selectable, e.g. you can sell x thing for x price, both arbitrary)
 
 ## Alright, this is it, but remember, we could always build on top of this.
