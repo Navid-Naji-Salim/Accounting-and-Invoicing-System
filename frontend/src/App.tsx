@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import { api } from "./api";
 import { Sidebar } from "./layout/Sidebar";
 import { ContactsPage } from "./pages/ContactsPage";
@@ -6,7 +7,7 @@ import { HomePage } from "./pages/HomePage";
 import { ItemsPage } from "./pages/ItemsPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ReportsPage } from "./pages/ReportsPage";
-import type { Admin, Contact, Item, PageId, Summary } from "./types";
+import type { Admin, Contact, Item, Summary } from "./types";
 
 type AppData = {
   summary: Summary;
@@ -23,22 +24,24 @@ const emptySummary: Summary = {
   vendorCount: 0,
 };
 
+const emptyData: AppData = {
+  summary: emptySummary,
+  items: [],
+  customers: [],
+  vendors: [],
+};
+
 export const App = () => {
   const [token, setToken] = useState(() => localStorage.getItem("adminToken"));
   const [admin, setAdmin] = useState<Admin | null>(null);
-  const [activePage, setActivePage] = useState<PageId>("home");
-  const [data, setData] = useState<AppData>({
-    summary: emptySummary,
-    items: [],
-    customers: [],
-    vendors: [],
-  });
+  const [data, setData] = useState<AppData>(emptyData);
   const [booting, setBooting] = useState(true);
 
   const logout = () => {
     localStorage.removeItem("adminToken");
     setToken(null);
     setAdmin(null);
+    setData(emptyData);
   };
 
   const loadData = async (activeToken: string) => {
@@ -89,63 +92,135 @@ export const App = () => {
     return <div className="loading-screen">Preparing your books workspace...</div>;
   }
 
-  if (!token || !admin) {
-    return (
-      <LoginPage
-        onLogin={async (email, password) => {
-          const response = await api.login(email, password);
-          localStorage.setItem("adminToken", response.token);
-          setToken(response.token);
-          setAdmin(response.admin);
-          await loadData(response.token);
-        }}
+  return (
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <LoginRoute
+            admin={admin}
+            loadData={loadData}
+            setAdmin={setAdmin}
+            setToken={setToken}
+            token={token}
+          />
+        }
       />
-    );
+      <Route
+        element={
+          <ProtectedLayout
+            admin={admin}
+            onLogout={logout}
+            onRefresh={() => (token ? loadData(token) : Promise.resolve())}
+            token={token}
+          />
+        }
+      >
+        <Route index element={<HomePage />} />
+        <Route
+          path="items"
+          element={
+            <ItemsPage
+              items={data.items}
+              summary={data.summary}
+              token={token ?? ""}
+              onRefresh={() => (token ? loadData(token) : Promise.resolve())}
+            />
+          }
+        />
+        <Route
+          path="sales/customers"
+          element={
+            <ContactsPage
+              contacts={data.customers}
+              kind="customers"
+              summary={data.summary}
+              token={token ?? ""}
+              onRefresh={() => (token ? loadData(token) : Promise.resolve())}
+            />
+          }
+        />
+        <Route
+          path="purchases/vendors"
+          element={
+            <ContactsPage
+              contacts={data.vendors}
+              kind="vendors"
+              summary={data.summary}
+              token={token ?? ""}
+              onRefresh={() => (token ? loadData(token) : Promise.resolve())}
+            />
+          }
+        />
+        <Route path="reports" element={<ReportsPage />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+type LoginRouteProps = {
+  admin: Admin | null;
+  loadData: (activeToken: string) => Promise<void>;
+  setAdmin: (admin: Admin) => void;
+  setToken: (token: string) => void;
+  token: string | null;
+};
+
+const LoginRoute = ({ admin, loadData, setAdmin, setToken, token }: LoginRouteProps) => {
+  const navigate = useNavigate();
+
+  if (token && admin) {
+    return <Navigate to="/" replace />;
   }
 
-  const refresh = () => loadData(token);
+  return (
+    <LoginPage
+      onLogin={async (email, password) => {
+        const response = await api.login(email, password);
+        localStorage.setItem("adminToken", response.token);
+        setToken(response.token);
+        setAdmin(response.admin);
+        await loadData(response.token);
+        navigate("/", { replace: true });
+      }}
+    />
+  );
+};
+
+type ProtectedLayoutProps = {
+  admin: Admin | null;
+  onLogout: () => void;
+  onRefresh: () => Promise<void>;
+  token: string | null;
+};
+
+const ProtectedLayout = ({ admin, onLogout, onRefresh, token }: ProtectedLayoutProps) => {
+  const navigate = useNavigate();
+
+  if (!token || !admin) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const logout = () => {
+    onLogout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="app-shell">
-      <Sidebar
-        activePage={activePage}
-        admin={admin}
-        onLogout={logout}
-        onNavigate={setActivePage}
-      />
+      <Sidebar admin={admin} onLogout={logout} />
       <main className="content">
         <header className="topbar">
           <div>
             <strong>Books foundation</strong>
             <div className="muted">Items, customers, and vendors are ready to manage.</div>
           </div>
-          <button className="ghost-button" type="button" onClick={() => void refresh()}>
+          <button className="ghost-button" type="button" onClick={() => void onRefresh()}>
             Refresh data
           </button>
         </header>
-        {activePage === "home" && <HomePage />}
-        {activePage === "items" && (
-          <ItemsPage items={data.items} summary={data.summary} token={token} onRefresh={refresh} />
-        )}
-        {activePage === "sales" && (
-          <ContactsPage
-            contacts={data.customers}
-            kind="customers"
-            summary={data.summary}
-            token={token}
-            onRefresh={refresh}
-          />
-        )}
-        {activePage === "purchases" && (
-          <ContactsPage
-            contacts={data.vendors}
-            kind="vendors"
-            summary={data.summary}
-            token={token}
-            onRefresh={refresh}
-          />
-        )}
-        {activePage === "reports" && <ReportsPage />}
+        <Outlet />
       </main>
     </div>
   );

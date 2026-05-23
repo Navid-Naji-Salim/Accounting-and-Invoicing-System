@@ -1,22 +1,21 @@
+import { NavLink } from "react-router-dom";
 import { icons } from "../icons";
 import type { Admin, PageId } from "../types";
 
-const navItems: Array<{ id: PageId; label: string }> = [
-  { id: "home", label: "Home" },
-  { id: "items", label: "Items" },
-  { id: "sales", label: "Sales" },
-  { id: "purchases", label: "Purchases" },
-  { id: "reports", label: "Reports" },
+const navItems: Array<{ id: PageId; label: string; to: string }> = [
+  { id: "home", label: "Home", to: "/" },
+  { id: "items", label: "Items", to: "/items" },
+  { id: "sales", label: "Sales", to: "/sales/customers" },
+  { id: "purchases", label: "Purchases", to: "/purchases/vendors" },
+  { id: "reports", label: "Reports", to: "/reports" },
 ];
 
 type SidebarProps = {
-  activePage: PageId;
   admin: Admin;
   onLogout: () => void;
-  onNavigate: (page: PageId) => void;
 };
 
-export const Sidebar = ({ activePage, admin, onLogout, onNavigate }: SidebarProps) => (
+export const Sidebar = ({ admin, onLogout }: SidebarProps) => (
   <aside className="sidebar">
     <div className="brand">
       <div className="brand-mark">AB</div>
@@ -29,15 +28,15 @@ export const Sidebar = ({ activePage, admin, onLogout, onNavigate }: SidebarProp
       {navItems.map((item) => {
         const Icon = icons[item.id];
         return (
-          <button
-            className={activePage === item.id ? "active" : ""}
+          <NavLink
+            className={({ isActive }) => (isActive ? "active" : undefined)}
+            end={item.to === "/"}
             key={item.id}
-            type="button"
-            onClick={() => onNavigate(item.id)}
+            to={item.to}
           >
             <Icon className="nav-icon" />
             {item.label}
-          </button>
+          </NavLink>
         );
       })}
     </nav>

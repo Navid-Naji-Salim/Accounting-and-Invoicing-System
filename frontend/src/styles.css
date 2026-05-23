@@ -217,7 +217,7 @@ textarea:focus {
   gap: 0.4rem;
 }
 
-.nav button {
+.nav a {
   display: flex;
   gap: 0.8rem;
   align-items: center;
@@ -227,11 +227,12 @@ textarea:focus {
   color: rgba(255, 255, 255, 0.76);
   background: transparent;
   font-weight: 800;
+  text-decoration: none;
   text-align: left;
 }
 
-.nav button.active,
-.nav button:hover {
+.nav a.active,
+.nav a:hover {
   color: white;
   background: var(--nav-soft);
 }
