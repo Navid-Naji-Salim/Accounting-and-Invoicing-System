@@ -6,6 +6,7 @@
   --line: rgba(20, 33, 61, 0.12);
   --nav: #10233f;
   --nav-soft: rgba(255, 255, 255, 0.08);
+  --nav-active: rgba(59, 130, 246, 0.16);
   --accent: #00b7ff;
   --accent-dark: #0096d6;
   --amber: #d97706;
@@ -233,12 +234,19 @@ textarea:focus {
   font-weight: 800;
   text-decoration: none;
   text-align: left;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
 }
 
-.nav a.active,
 .nav a:hover {
   color: white;
   background: var(--nav-soft);
+}
+
+.nav a.active {
+  color: white;
+  background: var(--nav-active);
 }
 
 .nav-icon {
