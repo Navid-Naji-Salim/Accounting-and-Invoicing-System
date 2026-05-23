@@ -6,7 +6,7 @@
   --line: rgba(20, 33, 61, 0.12);
   --nav: #10233f;
   --nav-soft: rgba(255, 255, 255, 0.08);
-  --nav-active: rgba(59, 130, 246, 0.16);
+  --nav-active: rgba(0, 183, 255, 0.34);
   --accent: #00b7ff;
   --accent-dark: #0096d6;
   --amber: #d97706;
@@ -235,8 +235,8 @@ textarea:focus {
   text-decoration: none;
   text-align: left;
   transition:
-    background 180ms ease,
-    color 180ms ease;
+    background-color 420ms ease,
+    color 420ms ease;
 }
 
 .nav a:hover {
