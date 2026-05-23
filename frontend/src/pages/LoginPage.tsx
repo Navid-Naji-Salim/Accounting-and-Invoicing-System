@@ -46,7 +46,7 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
             <input id="password" name="password" type="password" defaultValue="admin12345" required />
           </div>
           <button className="button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Checking..." : "Enter dashboard"}
+            {isSubmitting ? "Checking..." : "Log in"}
           </button>
           <div className="message">{message}</div>
         </form>
