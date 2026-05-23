@@ -2,14 +2,18 @@
   "name": "accounting-and-invoicing-system",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "type": "module",
-  "main": "dist/src/server.js",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "dev": "npm run prisma:generate && tsx watch backend/src/server.ts",
-    "build": "npm run clean && npm run prisma:generate && tsc -p tsconfig.json",
-    "clean": "powershell -NoProfile -Command \"if (Test-Path dist) { Remove-Item dist -Recurse -Force }\"",
-    "start": "node dist/src/server.js",
-    "typecheck": "npm run prisma:generate && tsc --noEmit",
+    "dev": "npm run dev --workspace backend",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "typecheck": "npm run typecheck --workspace backend && npm run typecheck --workspace frontend",
     "prisma:generate": "prisma generate",
     "db:push": "prisma db push",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,25 +29,8 @@
     "url": "https://github.com/Navid-Naji-Salim/Accounting-and-Invoicing-System/issues"
   },
   "homepage": "https://github.com/Navid-Naji-Salim/Accounting-and-Invoicing-System#readme",
-  "dependencies": {
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "pg": "^8.21.0"
-  },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.9.1",
-    "@types/pg": "^8.20.0",
-    "nodemon": "^3.1.14",
     "prisma": "^7.8.0",
-    "tsx": "^4.22.3",
     "typescript": "^6.0.3"
   }
 }

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "./backend",
+    "rootDir": ".",
     "outDir": "./dist",
     "module": "nodenext",
     "moduleResolution": "nodenext",
@@ -20,6 +20,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["backend/src/**/*.ts", "backend/generated/**/*.ts"],
+  "include": ["src/**/*.ts", "generated/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
