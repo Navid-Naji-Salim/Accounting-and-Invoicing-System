@@ -44,7 +44,7 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
             <input id="password" name="password" type="password" defaultValue="admin12345" required />
           </div>
           <button className="button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Checking..." : "Log in"}
+            {isSubmitting ? <span className="button-spinner" aria-label="Logging in" /> : "Log in"}
           </button>
           <div className="message">{message}</div>
         </form>
