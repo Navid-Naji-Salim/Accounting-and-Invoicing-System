@@ -195,6 +195,7 @@ type ProtectedLayoutProps = {
 
 const ProtectedLayout = ({ admin, onLogout, token }: ProtectedLayoutProps) => {
   const navigate = useNavigate();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   if (!token || !admin) {
     return <Navigate to="/login" replace />;
@@ -206,8 +207,13 @@ const ProtectedLayout = ({ admin, onLogout, token }: ProtectedLayoutProps) => {
   };
 
   return (
-    <div className="app-shell">
-      <Sidebar admin={admin} onLogout={logout} />
+    <div className={`app-shell ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+      <Sidebar
+        admin={admin}
+        isCollapsed={isSidebarCollapsed}
+        onLogout={logout}
+        onToggleCollapse={() => setIsSidebarCollapsed((current) => !current)}
+      />
       <main className="content">
         <Outlet />
       </main>

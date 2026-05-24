@@ -193,6 +193,11 @@ textarea:focus {
   display: grid;
   grid-template-columns: 252px 1fr;
   min-height: 100vh;
+  transition: grid-template-columns 240ms ease;
+}
+
+.app-shell.sidebar-collapsed {
+  grid-template-columns: 86px 1fr;
 }
 
 .sidebar {
@@ -206,6 +211,13 @@ textarea:focus {
     radial-gradient(circle at 25% 10%, rgba(245, 158, 11, 0.28), transparent 18rem);
 }
 
+.sidebar-head {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .sidebar-wordmark {
   padding: 0.7rem 0.75rem 1.45rem;
   color: white;
@@ -213,6 +225,28 @@ textarea:focus {
   font-size: 1.9rem;
   font-weight: 650;
   letter-spacing: -0.04em;
+}
+
+.sidebar-toggle {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 0.75rem;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-toggle:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 .profile-card {
@@ -230,6 +264,11 @@ textarea:focus {
   border-radius: 14px;
   background: linear-gradient(135deg, #2196f3, #7dd3fc);
   font-weight: 900;
+}
+
+.profile-mark-button {
+  border: 0;
+  color: white;
 }
 
 .profile-copy {
@@ -291,6 +330,68 @@ textarea:focus {
   bottom: 1.75rem;
   left: 0.95rem;
   padding: 0;
+}
+
+.sidebar.is-collapsed {
+  padding-inline: 0.7rem;
+}
+
+.sidebar.is-collapsed .sidebar-head {
+  display: grid;
+  justify-items: center;
+}
+
+.sidebar.is-collapsed .sidebar-wordmark {
+  padding: 0.6rem 0 1.1rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.sidebar.is-collapsed .sidebar-toggle {
+  margin-bottom: 1rem;
+}
+
+.sidebar.is-collapsed .nav {
+  gap: 0.55rem;
+}
+
+.sidebar.is-collapsed .nav a {
+  display: grid;
+  justify-items: center;
+  gap: 0.32rem;
+  padding: 0.7rem 0.35rem;
+  font-size: 0.66rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.sidebar.is-collapsed .nav-icon {
+  width: 21px;
+  height: 21px;
+}
+
+.sidebar.is-collapsed .sidebar-footer {
+  right: 0.7rem;
+  left: 0.7rem;
+}
+
+.sidebar.is-collapsed .profile-card {
+  display: grid;
+  justify-items: center;
+  padding: 0;
+}
+
+.sidebar.is-collapsed .settings-button,
+.sidebar.is-collapsed .profile-copy {
+  display: none;
+}
+
+.sidebar.is-collapsed .profile-menu {
+  right: auto;
+  bottom: 0;
+  left: calc(100% + 0.65rem);
+  width: 140px;
 }
 
 .settings-button {

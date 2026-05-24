@@ -13,15 +13,35 @@ const navItems: Array<{ id: PageId; label: string; to: string }> = [
 
 type SidebarProps = {
   admin: Admin;
+  isCollapsed: boolean;
   onLogout: () => void;
+  onToggleCollapse: () => void;
 };
 
-export const Sidebar = ({ admin, onLogout }: SidebarProps) => {
+export const Sidebar = ({ admin, isCollapsed, onLogout, onToggleCollapse }: SidebarProps) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-wordmark">XBooks</div>
+    <aside className={`sidebar ${isCollapsed ? "is-collapsed" : ""}`}>
+      <div className="sidebar-head">
+        <div className="sidebar-wordmark">{isCollapsed ? "XB" : "XBooks"}</div>
+        <button
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="sidebar-toggle"
+          type="button"
+          onClick={onToggleCollapse}
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d={isCollapsed ? "m10 7 5 5-5 5" : "m14 7-5 5 5 5"}
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+      </div>
       <nav className="nav">
         {navItems.map((item) => {
           const Icon = icons[item.id];
@@ -33,7 +53,7 @@ export const Sidebar = ({ admin, onLogout }: SidebarProps) => {
               to={item.to}
             >
               <Icon className="nav-icon" />
-              {item.label}
+              <span>{item.label}</span>
             </NavLink>
           );
         })}
@@ -47,11 +67,25 @@ export const Sidebar = ({ admin, onLogout }: SidebarProps) => {
           </div>
         )}
         <div className="profile-card">
-          <div className="brand-mark">A</div>
-          <div className="profile-copy">
-            <strong>Admin</strong>
-            <span>Administrator</span>
-          </div>
+          {isCollapsed ? (
+            <button
+              aria-expanded={isSettingsOpen}
+              aria-label="Open admin settings"
+              className="brand-mark profile-mark-button"
+              type="button"
+              onClick={() => setIsSettingsOpen((current) => !current)}
+            >
+              A
+            </button>
+          ) : (
+            <>
+              <div className="brand-mark">A</div>
+              <div className="profile-copy">
+                <strong>Admin</strong>
+                <span>Administrator</span>
+              </div>
+            </>
+          )}
           <button
             aria-expanded={isSettingsOpen}
             aria-label="Open admin settings"
