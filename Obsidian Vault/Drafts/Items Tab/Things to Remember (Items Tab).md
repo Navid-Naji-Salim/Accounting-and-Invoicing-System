@@ -3,6 +3,7 @@
 - make sure the database logic/backend logic is clean 
 - make sure you understand all of it (the items tab) after you're done implementing it
 - make sure you analyze all of zoho book's items tab and understand the ==concepts== about how everything works from a theoretical accounting aspect.
+- i think we might omit tax in general or we might not. in any case, i gotta make sure if we need it for this tab specifically
 
 ### what to especially focus on
 
