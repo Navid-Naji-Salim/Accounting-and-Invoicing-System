@@ -33,6 +33,36 @@ export const money = (body: Record<string, unknown>, field: string) => {
   return new Prisma.Decimal(value.toFixed(2));
 };
 
+export const optionalMoney = (body: Record<string, unknown>, field: string) => {
+  const value = body[field];
+  if (value === undefined || value === null || value === "") {
+    return new Prisma.Decimal("0.00");
+  }
+
+  return money(body, field);
+};
+
+export const booleanField = (
+  body: Record<string, unknown>,
+  field: string,
+  defaultValue = false,
+) => {
+  const value = body[field];
+  if (value === undefined || value === null || value === "") {
+    return defaultValue;
+  }
+
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    return ["true", "on", "1", "yes"].includes(value.toLowerCase());
+  }
+
+  return Boolean(value);
+};
+
 export const quantity = (body: Record<string, unknown>) => {
   const rawValue = body.quantity ?? 0;
   const value = typeof rawValue === "number" ? rawValue : Number(rawValue);

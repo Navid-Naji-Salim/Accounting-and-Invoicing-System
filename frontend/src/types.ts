@@ -18,9 +18,25 @@ export type Item = {
   id: string;
   name: string;
   sku: string | null;
+  itemType: string;
+  unit: string | null;
+  imageUrl: string | null;
   description: string | null;
+  salesEnabled: boolean;
   unitCost: number;
   salesPrice: number;
+  salesAccount: string;
+  salesTax: string | null;
+  salesDescription: string | null;
+  purchaseEnabled: boolean;
+  purchaseAccount: string;
+  purchaseTax: string | null;
+  purchaseDescription: string | null;
+  preferredVendorId: string | null;
+  preferredVendor?: {
+    id: string;
+    displayName: string;
+  } | null;
   quantity: number;
   inventoryValue: number;
 };

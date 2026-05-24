@@ -123,6 +123,7 @@ export const App = () => {
               items={data.items}
               summary={data.summary}
               token={token ?? ""}
+              vendors={data.vendors}
               onRefresh={() => (token ? loadData(token) : Promise.resolve())}
             />
           }

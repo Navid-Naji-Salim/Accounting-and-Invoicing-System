@@ -8,16 +8,29 @@ datasource db {
 }
 
 model Item {
-  id          String   @id @default(cuid())
-  name        String
-  sku         String?  @unique
-  description String?
-  unitCost    Decimal  @db.Decimal(12, 2)
-  salesPrice  Decimal  @db.Decimal(12, 2)
-  quantity    Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                String   @id @default(cuid())
+  name              String
+  sku               String?  @unique
+  itemType          String   @default("goods")
+  unit              String?
+  imageUrl          String?
+  description       String?
+  salesEnabled      Boolean  @default(true)
+  salesPrice        Decimal  @db.Decimal(12, 2)
+  salesAccount      String   @default("Sales")
+  salesTax          String?
+  salesDescription  String?
+  purchaseEnabled   Boolean  @default(true)
+  unitCost          Decimal  @db.Decimal(12, 2)
+  purchaseAccount   String   @default("Cost of Goods Sold")
+  purchaseTax       String?
+  purchaseDescription String?
+  preferredVendorId String?
+  preferredVendor   Vendor?  @relation(fields: [preferredVendorId], references: [id], onDelete: SetNull)
+  quantity          Int      @default(0)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Customer {
@@ -38,6 +51,7 @@ model Vendor {
   email       String?
   phone       String?
   notes       String?
+  items       Item[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
