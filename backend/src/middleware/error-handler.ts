@@ -31,7 +31,9 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
         ? `${getEntityLabel(error.meta?.modelName)} was not found.`
         : error.code === "P2002"
           ? "A record with this unique value already exists."
-          : "Database request failed.";
+          : error.code === "P2003"
+            ? "A selected related record was not found."
+            : "Database request failed.";
 
     res.status(error.code === "P2025" ? 404 : 400).json({ error: message });
     return;

@@ -2,15 +2,12 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { api, ApiError } from "../api";
 import { Field } from "../components/Field";
-import { PageTitle } from "../components/PageTitle";
-import { Stats } from "../components/Stats";
 import { currency } from "../lib/format";
-import type { Contact, Item, Summary } from "../types";
+import type { Contact, Item } from "../types";
 
 type ItemsPageProps = {
   dataError?: string;
   items: Item[];
-  summary: Summary;
   token: string;
   vendors: Contact[];
   onRefresh: () => Promise<void>;
@@ -21,21 +18,41 @@ const purchaseAccounts = ["Cost of Goods Sold", "Supplies Expense", "Inventory A
 const taxOptions = ["Exempt", "Standard Tax", "Reduced Tax", "Out of Scope"];
 const unitOptions = ["pcs", "box", "kg", "hour", "month"];
 
-export const ItemsPage = ({ dataError, items, summary, token, vendors, onRefresh }: ItemsPageProps) => {
+export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: ItemsPageProps) => {
   const [message, setMessage] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [salesEnabled, setSalesEnabled] = useState(true);
+  const [purchaseEnabled, setPurchaseEnabled] = useState(true);
+
+  const deleteItem = async (item: Item) => {
+    const confirmed = window.confirm(`Delete ${item.name}?`);
+    if (!confirmed) {
+      return;
+    }
+
+    setMessage("");
+    setDeletingId(item.id);
+    try {
+      await api.deleteItem(token, item.id);
+      await onRefresh();
+    } catch (error) {
+      setMessage(error instanceof ApiError ? error.message : "Unable to delete item.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <>
-      <PageTitle
-        eyebrow="Items"
-        title="Build your item catalog."
-        description="Create goods and services with the sales and purchase defaults your documents will reuse."
-      />
-      <Stats summary={summary} />
+      <header className="items-title">
+        <p className="eyebrow">Items</p>
+        <h1>Items</h1>
+        <p>Create goods and services with the sales and purchase defaults your documents will reuse.</p>
+      </header>
       {dataError ? <div className="panel page-alert">{dataError}</div> : null}
       <section className="items-workspace">
         <form
-          className="panel item-form"
+          className="panel item-form compact-item-form"
           onSubmit={async (event) => {
             event.preventDefault();
             setMessage("");
@@ -44,6 +61,8 @@ export const ItemsPage = ({ dataError, items, summary, token, vendors, onRefresh
             try {
               await api.createItem(token, Object.fromEntries(new FormData(form)));
               form.reset();
+              setSalesEnabled(true);
+              setPurchaseEnabled(true);
               await onRefresh();
             } catch (error) {
               setMessage(error instanceof ApiError ? error.message : "Unable to save item.");
@@ -58,15 +77,9 @@ export const ItemsPage = ({ dataError, items, summary, token, vendors, onRefresh
             <button className="button" type="submit">Save item</button>
           </div>
 
-          <div className="notice-row">
-            <span aria-hidden="true">i</span>
-            <p>Track stock later by enabling inventory preferences. This item can already hold sales and purchase defaults.</p>
-          </div>
-
-          <div className="item-identity-grid">
-            <div className="form-grid">
+          <div className="item-compact-grid">
+            <section className="item-basics">
               <Field label="Name" name="name" placeholder="Premium notebook" required />
-              <Field label="SKU" name="sku" placeholder="ITM-001" />
               <div className="radio-field">
                 <span>Type</span>
                 <label>
@@ -78,49 +91,56 @@ export const ItemsPage = ({ dataError, items, summary, token, vendors, onRefresh
                   Service
                 </label>
               </div>
-              <SelectField label="Unit" name="unit" placeholder="Select or type to add" options={unitOptions} />
-              <Field label="Image URL" name="imageUrl" placeholder="https://example.com/item.jpg" />
-              <Field label="Opening quantity" name="quantity" type="number" min="0" step="1" defaultValue="0" />
-            </div>
-            <label className="image-drop">
-              <input type="file" accept="image/*" />
-              <span className="image-glyph" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M5 19V5h14v14H5Z" stroke="currentColor" strokeWidth="1.8" />
-                  <path d="m8 15 2.7-3 2.2 2.4 1.4-1.6L17 16H7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" />
-                </svg>
-              </span>
-              <strong>Item image</strong>
-              <span>Drop or browse</span>
-            </label>
-          </div>
+              <SelectField label="Unit" name="unit" placeholder="Select a unit" options={unitOptions} />
+              <label className="image-drop compact-image-drop">
+                <input type="file" accept="image/*" aria-label="Item image" />
+                <span className="image-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M5 19V5h14v14H5Z" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="m8 15 2.7-3 2.2 2.4 1.4-1.6L17 16H7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" />
+                  </svg>
+                </span>
+                <strong>Item image</strong>
+                <span>Drop or browse</span>
+              </label>
+            </section>
 
-          <div className="item-section-grid">
-            <ItemSection title="Sales information" checkboxName="salesEnabled">
-              <MoneyField label="Selling price" name="salesPrice" required />
-              <SelectField label="Account" name="salesAccount" options={salesAccounts} defaultValue="Sales" required />
-              <div className="field">
+            <ItemSection
+              checked={salesEnabled}
+              checkboxName="salesEnabled"
+              onCheckedChange={setSalesEnabled}
+              title="Sales information"
+            >
+              <MoneyField disabled={!salesEnabled} label="Selling price" name="salesPrice" required={salesEnabled} />
+              <SelectField disabled={!salesEnabled} label="Account" name="salesAccount" options={salesAccounts} defaultValue="Sales" required={salesEnabled} />
+              <SelectField disabled={!salesEnabled} label="Tax" name="salesTax" placeholder="Select a tax" options={taxOptions} />
+              <div className="field item-description-field">
                 <label htmlFor="salesDescription">Description</label>
-                <textarea id="salesDescription" name="salesDescription" placeholder="Customer-facing description" />
+                <textarea disabled={!salesEnabled} id="salesDescription" name="salesDescription" placeholder="Customer-facing description" />
               </div>
-              <SelectField label="Tax" name="salesTax" placeholder="Select a tax" options={taxOptions} />
             </ItemSection>
 
-            <ItemSection title="Purchase information" checkboxName="purchaseEnabled">
-              <MoneyField label="Cost price" name="unitCost" required />
-              <SelectField label="Account" name="purchaseAccount" options={purchaseAccounts} defaultValue="Cost of Goods Sold" required />
-              <div className="field">
-                <label htmlFor="purchaseDescription">Description</label>
-                <textarea id="purchaseDescription" name="purchaseDescription" placeholder="Vendor-facing description" />
-              </div>
-              <SelectField label="Tax" name="purchaseTax" placeholder="Select a tax" options={taxOptions} />
+            <ItemSection
+              checked={purchaseEnabled}
+              checkboxName="purchaseEnabled"
+              onCheckedChange={setPurchaseEnabled}
+              title="Purchase information"
+            >
+              <MoneyField disabled={!purchaseEnabled} label="Cost price" name="unitCost" required={purchaseEnabled} />
+              <SelectField disabled={!purchaseEnabled} label="Account" name="purchaseAccount" options={purchaseAccounts} defaultValue="Cost of Goods Sold" required={purchaseEnabled} />
+              <SelectField disabled={!purchaseEnabled} label="Tax" name="purchaseTax" placeholder="Select a tax" options={taxOptions} />
               <SelectField
+                disabled={!purchaseEnabled}
                 label="Preferred vendor"
                 name="preferredVendorId"
                 placeholder="Select a vendor"
                 options={vendors.map((vendor) => ({ label: vendor.displayName, value: vendor.id }))}
               />
+              <div className="field item-description-field">
+                <label htmlFor="purchaseDescription">Description</label>
+                <textarea disabled={!purchaseEnabled} id="purchaseDescription" name="purchaseDescription" placeholder="Vendor-facing description" />
+              </div>
             </ItemSection>
           </div>
 
@@ -143,14 +163,13 @@ export const ItemsPage = ({ dataError, items, summary, token, vendors, onRefresh
                   <th>Sales</th>
                   <th>Purchase</th>
                   <th>Vendor</th>
-                  <th>Qty</th>
-                  <th>Value</th>
+                  <th aria-label="Actions"></th>
                 </tr>
               </thead>
               <tbody>
                 {items.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="muted">No items yet.</td>
+                    <td colSpan={6} className="muted">No items yet.</td>
                   </tr>
                 ) : (
                   items.map((item) => (
@@ -158,22 +177,30 @@ export const ItemsPage = ({ dataError, items, summary, token, vendors, onRefresh
                       <td>
                         <strong>{item.name}</strong>
                         <br />
-                        <span className="muted">{item.sku ?? item.unit ?? "No SKU"}</span>
+                        <span className="muted">{item.unit ?? "No unit"}</span>
                       </td>
                       <td><span className="pill">{item.itemType}</span></td>
                       <td>
-                        {currency.format(item.salesPrice)}
+                        {item.salesEnabled ? currency.format(item.salesPrice) : "-"}
                         <br />
                         <span className="muted">{item.salesAccount}</span>
                       </td>
                       <td>
-                        {currency.format(item.unitCost)}
+                        {item.purchaseEnabled ? currency.format(item.unitCost) : "-"}
                         <br />
                         <span className="muted">{item.purchaseAccount}</span>
                       </td>
                       <td>{item.preferredVendor?.displayName ?? "-"}</td>
-                      <td><span className="pill">{item.quantity}</span></td>
-                      <td>{currency.format(item.inventoryValue)}</td>
+                      <td>
+                        <button
+                          className="ghost-button danger-button"
+                          disabled={deletingId === item.id}
+                          type="button"
+                          onClick={() => void deleteItem(item)}
+                        >
+                          {deletingId === item.id ? "Deleting" : "Delete"}
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -195,12 +222,13 @@ type SelectFieldProps = {
   defaultValue?: string;
   placeholder?: string;
   required?: boolean;
+  disabled?: boolean;
 };
 
-const SelectField = ({ label, name, options, defaultValue = "", placeholder, required }: SelectFieldProps) => (
+const SelectField = ({ label, name, options, defaultValue = "", placeholder, required, disabled }: SelectFieldProps) => (
   <div className="field">
     <label htmlFor={name}>{label}</label>
-    <select id={name} name={name} defaultValue={defaultValue} required={required}>
+    <select disabled={disabled} id={name} name={name} defaultValue={defaultValue} required={required}>
       {placeholder ? <option value="">{placeholder}</option> : null}
       {options.map((option) => {
         const value = typeof option === "string" ? option : option.value;
@@ -220,28 +248,38 @@ type MoneyFieldProps = {
   label: string;
   name: string;
   required?: boolean;
+  disabled?: boolean;
 };
 
-const MoneyField = ({ label, name, required }: MoneyFieldProps) => (
+const MoneyField = ({ label, name, required, disabled }: MoneyFieldProps) => (
   <div className="field money-field">
     <label htmlFor={name}>{label}</label>
     <div>
       <span>USD</span>
-      <input id={name} name={name} type="number" min="0" step="0.01" required={required} />
+      <input disabled={disabled} id={name} name={name} type="number" min="0" step="0.01" required={required} />
     </div>
   </div>
 );
 
 type ItemSectionProps = {
+  checked: boolean;
   title: string;
   checkboxName: string;
+  onCheckedChange: (checked: boolean) => void;
   children: ReactNode;
 };
 
-const ItemSection = ({ title, checkboxName, children }: ItemSectionProps) => (
-  <section className="item-info-section">
+const ItemSection = ({ checked, title, checkboxName, onCheckedChange, children }: ItemSectionProps) => (
+  <section className={`item-info-section ${checked ? "" : "is-disabled"}`}>
     <label className="check-title">
-      <input type="checkbox" name={checkboxName} defaultChecked />
+      <input type="hidden" name={checkboxName} value="false" />
+      <input
+        checked={checked}
+        name={checkboxName}
+        onChange={(event) => onCheckedChange(event.currentTarget.checked)}
+        type="checkbox"
+        value="true"
+      />
       <span>{title}</span>
     </label>
     <div className="item-info-fields">{children}</div>

@@ -127,7 +127,6 @@ export const App = () => {
             <ItemsPage
               dataError={dataError}
               items={data.items}
-              summary={data.summary}
               token={token ?? ""}
               vendors={data.vendors}
               onRefresh={() => (token ? loadData(token) : Promise.resolve())}

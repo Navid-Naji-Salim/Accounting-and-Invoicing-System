@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
 import { presentItem } from "../presenters/item-presenter.js";
 import { parseBody } from "../utils/request.js";
+import { ApiError } from "../utils/api-error.js";
 import {
   booleanField,
   optionalMoney,
@@ -11,6 +12,34 @@ import {
 } from "../utils/validation.js";
 
 export const itemsRouter = Router();
+
+const itemTypes = new Set(["goods", "service"]);
+
+const itemType = (body: Record<string, unknown>) => {
+  const value = optionalString(body, "itemType") ?? "goods";
+  if (!itemTypes.has(value)) {
+    throw new ApiError(400, "itemType must be goods or service.");
+  }
+
+  return value;
+};
+
+const ensureVendorExists = async (preferredVendorId: string | null) => {
+  if (!preferredVendorId) {
+    return null;
+  }
+
+  const vendor = await prisma.vendor.findUnique({
+    where: { id: preferredVendorId },
+    select: { id: true },
+  });
+
+  if (!vendor) {
+    throw new ApiError(400, "Preferred vendor was not found.");
+  }
+
+  return preferredVendorId;
+};
 
 itemsRouter.get("/", async (_req, res, next) => {
   try {
@@ -27,12 +56,12 @@ itemsRouter.get("/", async (_req, res, next) => {
 itemsRouter.post("/", async (req, res, next) => {
   try {
     const body = parseBody(req);
-    const preferredVendorId = optionalString(body, "preferredVendorId");
+    const preferredVendorId = await ensureVendorExists(optionalString(body, "preferredVendorId"));
     const item = await prisma.item.create({
       data: {
         name: requiredString(body, "name"),
         sku: optionalString(body, "sku"),
-        itemType: optionalString(body, "itemType") ?? "goods",
+        itemType: itemType(body),
         unit: optionalString(body, "unit"),
         imageUrl: optionalString(body, "imageUrl"),
         description: optionalString(body, "description"),
@@ -61,13 +90,13 @@ itemsRouter.post("/", async (req, res, next) => {
 itemsRouter.patch("/:id", async (req, res, next) => {
   try {
     const body = parseBody(req);
-    const preferredVendorId = optionalString(body, "preferredVendorId");
+    const preferredVendorId = await ensureVendorExists(optionalString(body, "preferredVendorId"));
     const item = await prisma.item.update({
       where: { id: req.params.id },
       data: {
         ...(body.name !== undefined ? { name: requiredString(body, "name") } : {}),
         ...(body.sku !== undefined ? { sku: optionalString(body, "sku") } : {}),
-        ...(body.itemType !== undefined ? { itemType: optionalString(body, "itemType") ?? "goods" } : {}),
+        ...(body.itemType !== undefined ? { itemType: itemType(body) } : {}),
         ...(body.unit !== undefined ? { unit: optionalString(body, "unit") } : {}),
         ...(body.imageUrl !== undefined ? { imageUrl: optionalString(body, "imageUrl") } : {}),
         ...(body.description !== undefined

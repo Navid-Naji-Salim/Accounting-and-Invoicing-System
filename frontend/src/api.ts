@@ -53,6 +53,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  deleteItem: (token: string, id: string) =>
+    request<null>(`/api/items/${id}`, token, {
+      method: "DELETE",
+    }),
   createContact: (
     token: string,
     kind: "customers" | "vendors",

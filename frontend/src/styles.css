@@ -500,6 +500,27 @@ textarea:focus {
   gap: 1rem;
 }
 
+.items-title {
+  display: grid;
+  gap: 0.25rem;
+  margin: -0.4rem 0 0.75rem;
+}
+
+.items-title .eyebrow {
+  margin-bottom: 0.2rem;
+}
+
+.items-title h1 {
+  font-family: "Newsreader", serif;
+  font-size: clamp(2rem, 3.5vw, 2.85rem);
+  line-height: 0.95;
+}
+
+.items-title p:last-child {
+  margin: 0;
+  color: var(--muted);
+}
+
 .panel {
   border-radius: 26px;
   padding: 1.2rem;
@@ -518,7 +539,7 @@ textarea:focus {
 
 .item-form {
   display: grid;
-  gap: 1.2rem;
+  gap: 0.95rem;
 }
 
 .item-form-head {
@@ -569,6 +590,27 @@ textarea:focus {
   grid-template-columns: minmax(20rem, 1fr) minmax(16rem, 0.48fr);
   gap: 1.2rem;
   align-items: start;
+}
+
+.compact-item-form {
+  padding: 0.85rem;
+}
+
+.item-compact-grid {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.86fr) minmax(19rem, 1fr) minmax(19rem, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.item-basics,
+.compact-item-form .item-info-section {
+  display: grid;
+  gap: 0.62rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 0.72rem;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .radio-field {
@@ -633,6 +675,22 @@ textarea:focus {
   font-weight: 800;
 }
 
+.compact-image-drop {
+  min-height: 6rem;
+  padding: 0.7rem;
+}
+
+.compact-image-drop .image-glyph {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+}
+
+.compact-image-drop .image-glyph svg {
+  width: 27px;
+  height: 27px;
+}
+
 .image-glyph {
   display: grid;
   width: 56px;
@@ -664,9 +722,43 @@ textarea:focus {
 
 .item-info-fields {
   display: grid;
-  grid-template-columns: minmax(16rem, 0.9fr) minmax(16rem, 1fr);
-  gap: 1rem 1.3rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.62rem;
   align-items: start;
+}
+
+.compact-item-form .item-info-section {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.9rem;
+}
+
+.compact-item-form .item-info-section.is-disabled {
+  opacity: 0.62;
+}
+
+.compact-item-form .item-info-section.is-disabled input:not([type="checkbox"]),
+.compact-item-form .item-info-section.is-disabled select,
+.compact-item-form .item-info-section.is-disabled textarea {
+  background: rgba(241, 245, 249, 0.72);
+}
+
+.compact-item-form .item-info-fields {
+  grid-template-columns: 1fr;
+}
+
+.compact-item-form input,
+.compact-item-form select,
+.compact-item-form textarea {
+  border-radius: 13px;
+  padding: 0.64rem 0.78rem;
+}
+
+.compact-item-form textarea {
+  min-height: 2.8rem;
+}
+
+.item-description-field {
+  grid-column: 1 / -1;
 }
 
 .money-field > div {
@@ -691,6 +783,15 @@ textarea:focus {
 
 .item-list-panel {
   overflow: hidden;
+}
+
+.danger-button {
+  color: #b91c1c;
+}
+
+.danger-button:hover {
+  border-color: rgba(185, 28, 28, 0.28);
+  background: rgba(254, 226, 226, 0.72);
 }
 
 .table-wrap {
@@ -758,6 +859,7 @@ th {
   .app-shell,
   .workspace-grid,
   .item-identity-grid,
+  .item-compact-grid,
   .item-info-fields,
   .stats-grid {
     grid-template-columns: 1fr;
