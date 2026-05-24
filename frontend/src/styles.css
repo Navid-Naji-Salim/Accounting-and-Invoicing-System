@@ -206,6 +206,15 @@ textarea:focus {
     radial-gradient(circle at 25% 10%, rgba(245, 158, 11, 0.28), transparent 18rem);
 }
 
+.sidebar-wordmark {
+  padding: 0.7rem 0.75rem 1.45rem;
+  color: white;
+  font-family: "Newsreader", serif;
+  font-size: 1.9rem;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
 .profile-card {
   display: flex;
   gap: 0.85rem;

@@ -21,6 +21,7 @@ export const Sidebar = ({ admin, onLogout }: SidebarProps) => {
 
   return (
     <aside className="sidebar">
+      <div className="sidebar-wordmark">XBooks</div>
       <nav className="nav">
         {navItems.map((item) => {
           const Icon = icons[item.id];
