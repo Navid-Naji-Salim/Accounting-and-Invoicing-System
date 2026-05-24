@@ -191,7 +191,7 @@ textarea:focus {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 252px 1fr;
   min-height: 100vh;
 }
 
