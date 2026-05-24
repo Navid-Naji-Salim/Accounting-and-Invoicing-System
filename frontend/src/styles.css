@@ -291,7 +291,12 @@ textarea:focus {
 
 .nav-control:hover {
   color: white;
-  background: var(--nav-active);
+  background: rgba(96, 165, 250, 0.18);
+}
+
+.nav-control:active {
+  background: rgba(96, 165, 250, 0.34);
+  transition: none;
 }
 
 .nav a.active {
