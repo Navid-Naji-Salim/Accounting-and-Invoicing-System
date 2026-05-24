@@ -289,23 +289,12 @@ textarea:focus {
   padding: clamp(1rem, 3vw, 2.5rem);
 }
 
-.topbar,
 .panel,
 .stat-card {
   border: 1px solid var(--line);
   background: var(--panel);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1.2rem;
-  border-radius: 24px;
-  padding: 1rem;
 }
 
 .page-title {
@@ -443,8 +432,7 @@ th {
     padding: 1.2rem;
   }
 
-  .split,
-  .topbar {
+  .split {
     display: grid;
     grid-template-columns: 1fr;
   }

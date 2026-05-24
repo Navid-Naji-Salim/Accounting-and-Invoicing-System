@@ -111,7 +111,6 @@ export const App = () => {
           <ProtectedLayout
             admin={admin}
             onLogout={logout}
-            onRefresh={() => (token ? loadData(token) : Promise.resolve())}
             token={token}
           />
         }
@@ -191,11 +190,10 @@ const LoginRoute = ({ admin, loadData, setAdmin, setToken, token }: LoginRoutePr
 type ProtectedLayoutProps = {
   admin: Admin | null;
   onLogout: () => void;
-  onRefresh: () => Promise<void>;
   token: string | null;
 };
 
-const ProtectedLayout = ({ admin, onLogout, onRefresh, token }: ProtectedLayoutProps) => {
+const ProtectedLayout = ({ admin, onLogout, token }: ProtectedLayoutProps) => {
   const navigate = useNavigate();
 
   if (!token || !admin) {
@@ -211,15 +209,6 @@ const ProtectedLayout = ({ admin, onLogout, onRefresh, token }: ProtectedLayoutP
     <div className="app-shell">
       <Sidebar admin={admin} onLogout={logout} />
       <main className="content">
-        <header className="topbar">
-          <div>
-            <strong>Books foundation</strong>
-            <div className="muted">Items, customers, and vendors are ready to manage.</div>
-          </div>
-          <button className="ghost-button" type="button" onClick={() => void onRefresh()}>
-            Refresh data
-          </button>
-        </header>
         <Outlet />
       </main>
     </div>
