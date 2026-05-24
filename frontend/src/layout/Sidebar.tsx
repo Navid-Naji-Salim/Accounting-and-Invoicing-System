@@ -25,13 +25,15 @@ export const Sidebar = ({ admin, isCollapsed, onLogout, onToggleCollapse }: Side
     <aside className={`sidebar ${isCollapsed ? "is-collapsed" : ""}`}>
       <div className="sidebar-head">
         <div className="sidebar-wordmark">{isCollapsed ? "XB" : "XBooks"}</div>
+      </div>
+      <nav className="nav">
         <button
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="sidebar-toggle"
+          className="nav-control"
           type="button"
           onClick={onToggleCollapse}
         >
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg className="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d={isCollapsed ? "m10 7 5 5-5 5" : "m14 7-5 5 5 5"}
               stroke="currentColor"
@@ -40,9 +42,8 @@ export const Sidebar = ({ admin, isCollapsed, onLogout, onToggleCollapse }: Side
               strokeWidth="2"
             />
           </svg>
+          <span>{isCollapsed ? "Expand" : "Collapse"}</span>
         </button>
-      </div>
-      <nav className="nav">
         {navItems.map((item) => {
           const Icon = icons[item.id];
           return (
