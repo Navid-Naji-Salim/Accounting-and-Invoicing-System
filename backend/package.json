@@ -10,6 +10,7 @@
     "clean": "powershell -NoProfile -Command \"if (Test-Path dist) { Remove-Item dist -Recurse -Force }\"",
     "start": "node dist/src/server.js",
     "typecheck": "npm run prisma:generate && tsc --noEmit",
+    "db:dev": "prisma dev --config ../prisma.config.ts",
     "prisma:generate": "prisma generate --config ../prisma.config.ts",
     "db:push": "prisma db push --config ../prisma.config.ts"
   },
