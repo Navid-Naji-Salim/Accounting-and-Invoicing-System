@@ -44,11 +44,6 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
 
   return (
     <>
-      <header className="items-title">
-        <p className="eyebrow">Items</p>
-        <h1>Items</h1>
-        <p>Create goods and services with the sales and purchase defaults your documents will reuse.</p>
-      </header>
       {dataError ? <div className="panel page-alert">{dataError}</div> : null}
       <section className="items-workspace">
         <form

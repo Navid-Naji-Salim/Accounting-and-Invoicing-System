@@ -500,27 +500,6 @@ textarea:focus {
   gap: 1rem;
 }
 
-.items-title {
-  display: grid;
-  gap: 0.25rem;
-  margin: -0.4rem 0 0.75rem;
-}
-
-.items-title .eyebrow {
-  margin-bottom: 0.2rem;
-}
-
-.items-title h1 {
-  font-family: "Newsreader", serif;
-  font-size: clamp(2rem, 3.5vw, 2.85rem);
-  line-height: 0.95;
-}
-
-.items-title p:last-child {
-  margin: 0;
-  color: var(--muted);
-}
-
 .panel {
   border-radius: 26px;
   padding: 1.2rem;
