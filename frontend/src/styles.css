@@ -193,7 +193,7 @@ textarea:focus {
   display: grid;
   grid-template-columns: 252px 1fr;
   min-height: 100vh;
-  transition: grid-template-columns 320ms ease;
+  transition: grid-template-columns 240ms ease;
 }
 
 .app-shell.sidebar-collapsed {
@@ -209,7 +209,6 @@ textarea:focus {
   background:
     linear-gradient(180deg, rgba(16, 35, 63, 0.98), rgba(10, 24, 46, 0.98)),
     radial-gradient(circle at 25% 10%, rgba(245, 158, 11, 0.28), transparent 18rem);
-  transition: padding 320ms ease;
 }
 
 .sidebar-head {
@@ -223,10 +222,6 @@ textarea:focus {
   font-size: 1.9rem;
   font-weight: 650;
   letter-spacing: -0.04em;
-  transition:
-    font-size 320ms ease,
-    letter-spacing 320ms ease,
-    padding 320ms ease;
 }
 
 .profile-card {
@@ -286,9 +281,7 @@ textarea:focus {
   text-align: left;
   transition:
     background-color 420ms ease,
-    color 420ms ease,
-    gap 320ms ease,
-    padding 320ms ease;
+    color 420ms ease;
 }
 
 .nav a:hover {
@@ -310,9 +303,6 @@ textarea:focus {
   width: 20px;
   height: 20px;
   flex: 0 0 auto;
-  transition:
-    width 320ms ease,
-    height 320ms ease;
 }
 
 .sidebar-footer {
@@ -352,11 +342,6 @@ textarea:focus {
   font-size: 0.66rem;
   line-height: 1;
   text-align: center;
-}
-
-.sidebar.is-collapsed .nav a span,
-.sidebar.is-collapsed .nav-control span {
-  transition: transform 320ms ease;
 }
 
 .sidebar.is-collapsed .nav-icon {
