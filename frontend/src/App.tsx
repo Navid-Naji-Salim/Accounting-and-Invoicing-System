@@ -36,15 +36,18 @@ export const App = () => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [data, setData] = useState<AppData>(emptyData);
   const [booting, setBooting] = useState(true);
+  const [dataError, setDataError] = useState("");
 
   const logout = () => {
     localStorage.removeItem("adminToken");
     setToken(null);
     setAdmin(null);
     setData(emptyData);
+    setDataError("");
   };
 
   const loadData = async (activeToken: string) => {
+    setDataError("");
     const [summary, items, customers, vendors] = await Promise.all([
       api.summary(activeToken),
       api.items(activeToken),
@@ -70,7 +73,9 @@ export const App = () => {
         }
 
         setAdmin(response.admin);
-        await loadData(token);
+        await loadData(token).catch(() => {
+          setDataError("Some workspace data could not be loaded. Try refreshing in a moment.");
+        });
       } catch {
         if (isCurrent) {
           logout();
@@ -120,6 +125,7 @@ export const App = () => {
           path="items"
           element={
             <ItemsPage
+              dataError={dataError}
               items={data.items}
               summary={data.summary}
               token={token ?? ""}
@@ -168,8 +174,6 @@ type LoginRouteProps = {
 };
 
 const LoginRoute = ({ admin, loadData, setAdmin, setToken, token }: LoginRouteProps) => {
-  const navigate = useNavigate();
-
   if (token && admin) {
     return <Navigate to="/" replace />;
   }
@@ -181,8 +185,10 @@ const LoginRoute = ({ admin, loadData, setAdmin, setToken, token }: LoginRoutePr
         localStorage.setItem("adminToken", response.token);
         setToken(response.token);
         setAdmin(response.admin);
-        await loadData(response.token);
-        navigate("/", { replace: true });
+        void loadData(response.token).catch(() => {
+          // The user is authenticated; keep them in the app even if a secondary
+          // workspace request needs another try.
+        });
       }}
     />
   );

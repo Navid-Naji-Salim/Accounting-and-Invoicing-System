@@ -8,6 +8,7 @@ import { currency } from "../lib/format";
 import type { Contact, Item, Summary } from "../types";
 
 type ItemsPageProps = {
+  dataError?: string;
   items: Item[];
   summary: Summary;
   token: string;
@@ -20,7 +21,7 @@ const purchaseAccounts = ["Cost of Goods Sold", "Supplies Expense", "Inventory A
 const taxOptions = ["Exempt", "Standard Tax", "Reduced Tax", "Out of Scope"];
 const unitOptions = ["pcs", "box", "kg", "hour", "month"];
 
-export const ItemsPage = ({ items, summary, token, vendors, onRefresh }: ItemsPageProps) => {
+export const ItemsPage = ({ dataError, items, summary, token, vendors, onRefresh }: ItemsPageProps) => {
   const [message, setMessage] = useState("");
 
   return (
@@ -31,6 +32,7 @@ export const ItemsPage = ({ items, summary, token, vendors, onRefresh }: ItemsPa
         description="Create goods and services with the sales and purchase defaults your documents will reuse."
       />
       <Stats summary={summary} />
+      {dataError ? <div className="panel page-alert">{dataError}</div> : null}
       <section className="items-workspace">
         <form
           className="panel item-form"
