@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace backend",
-    "dev:db": "prisma dev",
+    "dev:db": "prisma dev --name xbooks --port 51223 --db-port 51224 --shadow-db-port 51225",
     "dev:backend": "npm run dev --workspace backend",
     "dev:frontend": "npm run dev --workspace frontend",
     "build": "npm run build --workspace backend && npm run build --workspace frontend",
