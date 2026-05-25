@@ -601,20 +601,20 @@ textarea:focus {
 }
 
 .radio-field {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
+  display: grid;
+  grid-template-columns: 4.5rem auto max-content auto max-content;
+  gap: 0.75rem 0.45rem;
   align-items: center;
 }
 
-.radio-field > span {
+.radio-field > span:first-child {
   width: 4.5rem;
   color: #334155;
   font-size: 0.82rem;
   font-weight: 800;
 }
 
-.radio-field label,
+.radio-field .option-text,
 .check-title {
   display: inline-flex;
   gap: 0.45rem;
@@ -631,6 +631,12 @@ textarea:focus {
   accent-color: var(--accent);
 }
 
+.radio-field input:focus,
+.check-title input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 .select-menu {
   position: relative;
 }
@@ -644,13 +650,24 @@ textarea:focus {
   border-radius: 13px;
   padding: 0.64rem 0.78rem;
   color: var(--ink);
-  background:
-    linear-gradient(45deg, transparent 50%, #64748b 50%) right 1.1rem center / 0.42rem 0.42rem no-repeat,
-    linear-gradient(135deg, #64748b 50%, transparent 50%) right 0.82rem center / 0.42rem 0.42rem no-repeat,
-    rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.96);
   cursor: pointer;
   list-style: none;
   min-height: 2.72rem;
+}
+
+.select-menu summary::after {
+  content: "";
+  width: 0.48rem;
+  height: 0.48rem;
+  margin-left: 0.85rem;
+  border-top: 2px solid #64748b;
+  border-left: 2px solid #64748b;
+  transform: translateY(0.12rem) rotate(45deg);
+  transform-origin: center;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 
 .select-menu summary::-webkit-details-marker {
@@ -662,10 +679,19 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(0, 183, 255, 0.06);
 }
 
+.select-menu[open] summary::after {
+  border-color: var(--accent);
+  transform: translateY(-0.12rem) rotate(225deg);
+}
+
 .select-menu summary[aria-disabled="true"] {
   color: var(--muted);
   background: rgba(241, 245, 249, 0.72);
   cursor: not-allowed;
+}
+
+.select-menu summary[aria-disabled="true"]::after {
+  border-color: #94a3b8;
 }
 
 .select-options {
@@ -815,6 +841,47 @@ textarea:focus {
 
 .compact-item-form .item-info-fields {
   grid-template-columns: 1fr;
+}
+
+.compact-item-form .item-info-section.is-sales .item-info-fields {
+  grid-template-areas:
+    "price"
+    "account"
+    "tax"
+    "description";
+}
+
+.compact-item-form .item-info-section.is-purchase .item-info-fields {
+  grid-template-areas:
+    "price"
+    "account"
+    "tax"
+    "vendor"
+    "description";
+}
+
+.compact-item-form .item-info-section.is-sales .item-info-fields > :nth-child(1),
+.compact-item-form .item-info-section.is-purchase .item-info-fields > :nth-child(1) {
+  grid-area: price;
+}
+
+.compact-item-form .item-info-section.is-sales .item-info-fields > :nth-child(2),
+.compact-item-form .item-info-section.is-purchase .item-info-fields > :nth-child(2) {
+  grid-area: account;
+}
+
+.compact-item-form .item-info-section.is-sales .item-info-fields > :nth-child(3),
+.compact-item-form .item-info-section.is-purchase .item-info-fields > :nth-child(3) {
+  grid-area: tax;
+}
+
+.compact-item-form .item-info-section.is-purchase .item-info-fields > :nth-child(4) {
+  grid-area: vendor;
+}
+
+.compact-item-form .item-info-section.is-sales .item-info-fields > :nth-child(4),
+.compact-item-form .item-info-section.is-purchase .item-info-fields > :nth-child(5) {
+  grid-area: description;
 }
 
 .compact-item-form input,

@@ -88,14 +88,10 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               <Field label="Name" name="name" placeholder="Premium notebook" required />
               <div className="radio-field">
                 <span>Type</span>
-                <label>
-                  <input type="radio" name="itemType" value="goods" defaultChecked />
-                  Goods
-                </label>
-                <label>
-                  <input type="radio" name="itemType" value="service" />
-                  Service
-                </label>
+                <input aria-label="Goods" type="radio" name="itemType" value="goods" defaultChecked />
+                <span className="option-text">Goods</span>
+                <input aria-label="Service" type="radio" name="itemType" value="service" />
+                <span className="option-text">Service</span>
               </div>
               <DropdownField
                 name="unit"
@@ -125,6 +121,7 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               checkboxName="salesEnabled"
               onCheckedChange={setSalesEnabled}
               title="Sales information"
+              variant="sales"
             >
               <MoneyField disabled={!salesEnabled} label="Selling price" name="salesPrice" required={salesEnabled} />
               <DropdownField disabled={!salesEnabled} label="Account" name="salesAccount" openDropdown={openDropdown} options={salesAccounts} defaultValue="general income" required={salesEnabled} resetVersion={resetVersion} setOpenDropdown={setOpenDropdown} />
@@ -140,6 +137,7 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               checkboxName="purchaseEnabled"
               onCheckedChange={setPurchaseEnabled}
               title="Purchase information"
+              variant="purchase"
             >
               <MoneyField disabled={!purchaseEnabled} label="Cost price" name="unitCost" required={purchaseEnabled} />
               <DropdownField disabled={!purchaseEnabled} label="Account" name="purchaseAccount" openDropdown={openDropdown} options={purchaseAccounts} defaultValue="Cost of Goods Sold" required={purchaseEnabled} resetVersion={resetVersion} setOpenDropdown={setOpenDropdown} />
@@ -361,14 +359,16 @@ type ItemSectionProps = {
   title: string;
   checkboxName: string;
   onCheckedChange: (checked: boolean) => void;
+  variant?: "sales" | "purchase";
   children: ReactNode;
 };
 
-const ItemSection = ({ checked, title, checkboxName, onCheckedChange, children }: ItemSectionProps) => (
-  <section className={`item-info-section ${checked ? "" : "is-disabled"}`}>
-    <label className="check-title">
+const ItemSection = ({ checked, title, checkboxName, onCheckedChange, variant, children }: ItemSectionProps) => (
+  <section className={`item-info-section ${variant ? `is-${variant}` : ""} ${checked ? "" : "is-disabled"}`}>
+    <div className="check-title">
       <input type="hidden" name={checkboxName} value="false" />
       <input
+        aria-label={title}
         checked={checked}
         name={checkboxName}
         onChange={(event) => onCheckedChange(event.currentTarget.checked)}
@@ -376,7 +376,7 @@ const ItemSection = ({ checked, title, checkboxName, onCheckedChange, children }
         value="true"
       />
       <span>{title}</span>
-    </label>
+    </div>
     <div className="item-info-fields">{children}</div>
   </section>
 );
