@@ -602,8 +602,8 @@ textarea:focus {
 
 .radio-field {
   display: grid;
-  grid-template-columns: 4.5rem auto max-content auto max-content;
-  gap: 0.75rem 0.45rem;
+  grid-template-columns: 4.5rem max-content max-content;
+  gap: 0.75rem 0.95rem;
   align-items: center;
 }
 
@@ -614,7 +614,7 @@ textarea:focus {
   font-weight: 800;
 }
 
-.radio-field .option-text,
+.radio-option,
 .check-title {
   display: inline-flex;
   gap: 0.45rem;
@@ -622,6 +622,14 @@ textarea:focus {
   color: var(--ink);
   font-size: 1rem;
   font-weight: 800;
+}
+
+.radio-option {
+  pointer-events: none;
+}
+
+.radio-option input {
+  pointer-events: auto;
 }
 
 .radio-field input,
@@ -658,15 +666,16 @@ textarea:focus {
 
 .select-menu summary::after {
   content: "";
-  width: 0.48rem;
-  height: 0.48rem;
+  width: 0;
+  height: 0;
   margin-left: 0.85rem;
-  border-top: 2px solid #64748b;
-  border-left: 2px solid #64748b;
-  transform: translateY(0.12rem) rotate(45deg);
+  border-right: 0.32rem solid transparent;
+  border-left: 0.32rem solid transparent;
+  border-bottom: 0.42rem solid #64748b;
+  transform: translateY(-0.05rem) rotate(0deg);
   transform-origin: center;
   transition:
-    border-color 180ms ease,
+    border-bottom-color 180ms ease,
     transform 180ms ease;
 }
 
@@ -680,8 +689,8 @@ textarea:focus {
 }
 
 .select-menu[open] summary::after {
-  border-color: var(--accent);
-  transform: translateY(-0.12rem) rotate(225deg);
+  border-bottom-color: var(--accent);
+  transform: translateY(0.05rem) rotate(180deg);
 }
 
 .select-menu summary[aria-disabled="true"] {
@@ -691,7 +700,7 @@ textarea:focus {
 }
 
 .select-menu summary[aria-disabled="true"]::after {
-  border-color: #94a3b8;
+  border-bottom-color: #94a3b8;
 }
 
 .select-options {
@@ -848,6 +857,7 @@ textarea:focus {
     "price"
     "account"
     "tax"
+    "vendor"
     "description";
 }
 
@@ -858,6 +868,12 @@ textarea:focus {
     "tax"
     "vendor"
     "description";
+}
+
+.compact-item-form .item-info-section.is-sales .item-info-fields::before {
+  content: "";
+  grid-area: vendor;
+  min-height: 4.12rem;
 }
 
 .compact-item-form .item-info-section.is-sales .item-info-fields > :nth-child(1),

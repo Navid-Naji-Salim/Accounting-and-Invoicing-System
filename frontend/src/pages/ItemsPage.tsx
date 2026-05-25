@@ -88,10 +88,14 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               <Field label="Name" name="name" placeholder="Premium notebook" required />
               <div className="radio-field">
                 <span>Type</span>
-                <input aria-label="Goods" type="radio" name="itemType" value="goods" defaultChecked />
-                <span className="option-text">Goods</span>
-                <input aria-label="Service" type="radio" name="itemType" value="service" />
-                <span className="option-text">Service</span>
+                <span className="radio-option">
+                  <input aria-label="Goods" type="radio" name="itemType" value="goods" defaultChecked />
+                  <span className="option-text">Goods</span>
+                </span>
+                <span className="radio-option">
+                  <input aria-label="Service" type="radio" name="itemType" value="service" />
+                  <span className="option-text">Service</span>
+                </span>
               </div>
               <DropdownField
                 name="unit"
