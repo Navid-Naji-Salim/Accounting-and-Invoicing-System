@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { api, ApiError } from "../api";
 import { Field } from "../components/Field";
@@ -30,6 +30,7 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
   const [salesEnabled, setSalesEnabled] = useState(true);
   const [purchaseEnabled, setPurchaseEnabled] = useState(true);
   const [unit, setUnit] = useState("");
+  const [resetVersion, setResetVersion] = useState(0);
 
   const deleteItem = async (item: Item) => {
     const confirmed = window.confirm(`Delete ${item.name}?`);
@@ -66,6 +67,7 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               setUnit("");
               setSalesEnabled(true);
               setPurchaseEnabled(true);
+              setResetVersion((current) => current + 1);
               await onRefresh();
             } catch (error) {
               setMessage(error instanceof ApiError ? error.message : "Unable to save item.");
@@ -94,7 +96,7 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
                   Service
                 </label>
               </div>
-              <UnitField
+              <DropdownField
                 name="unit"
                 options={unitOptions}
                 placeholder="Select a unit"
@@ -122,8 +124,8 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               title="Sales information"
             >
               <MoneyField disabled={!salesEnabled} label="Selling price" name="salesPrice" required={salesEnabled} />
-              <SelectField disabled={!salesEnabled} label="Account" name="salesAccount" options={salesAccounts} defaultValue="general income" required={salesEnabled} />
-              <SelectField disabled={!salesEnabled} label="Tax" name="salesTax" placeholder="Select a tax" options={taxOptions} />
+              <DropdownField disabled={!salesEnabled} label="Account" name="salesAccount" options={salesAccounts} defaultValue="general income" required={salesEnabled} resetVersion={resetVersion} />
+              <DropdownField disabled={!salesEnabled} label="Tax" name="salesTax" placeholder="Select a tax" options={taxOptions} resetVersion={resetVersion} />
               <div className="field item-description-field">
                 <label htmlFor="salesDescription">Description</label>
                 <textarea disabled={!salesEnabled} id="salesDescription" name="salesDescription" placeholder="Customer-facing description" />
@@ -137,14 +139,15 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               title="Purchase information"
             >
               <MoneyField disabled={!purchaseEnabled} label="Cost price" name="unitCost" required={purchaseEnabled} />
-              <SelectField disabled={!purchaseEnabled} label="Account" name="purchaseAccount" options={purchaseAccounts} defaultValue="Cost of Goods Sold" required={purchaseEnabled} />
-              <SelectField disabled={!purchaseEnabled} label="Tax" name="purchaseTax" placeholder="Select a tax" options={taxOptions} />
-              <SelectField
+              <DropdownField disabled={!purchaseEnabled} label="Account" name="purchaseAccount" options={purchaseAccounts} defaultValue="Cost of Goods Sold" required={purchaseEnabled} resetVersion={resetVersion} />
+              <DropdownField disabled={!purchaseEnabled} label="Tax" name="purchaseTax" placeholder="Select a tax" options={taxOptions} resetVersion={resetVersion} />
+              <DropdownField
                 disabled={!purchaseEnabled}
                 label="Preferred vendor"
                 name="preferredVendorId"
                 placeholder="Select a vendor"
                 options={vendors.map((vendor) => ({ label: vendor.displayName, value: vendor.id }))}
+                resetVersion={resetVersion}
               />
               <div className="field item-description-field">
                 <label htmlFor="purchaseDescription">Description</label>
@@ -225,66 +228,86 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
 type Option = string | { label: string; value: string };
 
 type SelectFieldProps = {
-  label: string;
+  label?: string;
   name: string;
   options: Option[];
   defaultValue?: string;
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
+  resetVersion?: number;
 };
 
-const SelectField = ({ label, name, options, defaultValue = "", placeholder, required, disabled }: SelectFieldProps) => (
-  <div className="field">
-    <label htmlFor={name}>{label}</label>
-    <select disabled={disabled} id={name} name={name} defaultValue={defaultValue} required={required}>
-      {placeholder ? <option value="">{placeholder}</option> : null}
-      {options.map((option) => {
-        const value = typeof option === "string" ? option : option.value;
-        const optionLabel = typeof option === "string" ? option : option.label;
-
-        return (
-          <option key={value} value={value}>
-            {optionLabel}
-          </option>
-        );
-      })}
-    </select>
-  </div>
-);
-
-type UnitFieldProps = {
-  name: string;
-  options: string[];
-  placeholder: string;
-  value: string;
-  onChange: (value: string) => void;
-};
-
-const UnitField = ({ name, options, placeholder, value, onChange }: UnitFieldProps) => {
+const DropdownField = ({
+  label = "Unit",
+  name,
+  options,
+  defaultValue = "",
+  placeholder = "Select an option",
+  required,
+  disabled,
+  resetVersion,
+  value: controlledValue,
+  onChange,
+}: SelectFieldProps & { value?: string; onChange?: (value: string) => void }) => {
   const detailsRef = useRef<HTMLDetailsElement>(null);
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const selectedValue = controlledValue ?? internalValue;
+
+  useEffect(() => {
+    if (controlledValue === undefined) {
+      setInternalValue(defaultValue);
+    }
+  }, [controlledValue, defaultValue, resetVersion]);
+
+  const selectedOption = options.find((option) => {
+    const optionValue = typeof option === "string" ? option : option.value;
+    return optionValue === selectedValue;
+  });
+  const selectedLabel =
+    typeof selectedOption === "string" ? selectedOption : selectedOption?.label;
 
   return (
-    <div className="field unit-field">
-      <label htmlFor={`${name}-value`}>Unit</label>
-      <input id={`${name}-value`} name={name} type="hidden" value={value} />
-      <details ref={detailsRef} className="unit-menu">
-        <summary>{value || placeholder}</summary>
-        <div className="unit-options">
+    <div className="field dropdown-field">
+      <label htmlFor={`${name}-value`}>{label}</label>
+      <input id={`${name}-value`} name={name} type="hidden" value={selectedValue} required={required} />
+      <details ref={detailsRef} className="select-menu">
+        <summary
+          aria-disabled={disabled}
+          onClick={(event) => {
+            if (disabled) {
+              event.preventDefault();
+            }
+          }}
+        >
+          {selectedLabel || placeholder}
+        </summary>
+        <div className="select-options">
           {options.map((option) => (
-            <button
-              className={option === value ? "is-selected" : ""}
-              key={option}
-              type="button"
-              onClick={() => {
-                onChange(option);
-                if (detailsRef.current) {
-                  detailsRef.current.open = false;
-                }
-              }}
-            >
-              {option}
-            </button>
+            (() => {
+              const optionValue = typeof option === "string" ? option : option.value;
+              const optionLabel = typeof option === "string" ? option : option.label;
+
+              return (
+                <button
+                  className={optionValue === selectedValue ? "is-selected" : ""}
+                  disabled={disabled}
+                  key={optionValue}
+                  type="button"
+                  onClick={() => {
+                    if (controlledValue === undefined) {
+                      setInternalValue(optionValue);
+                    }
+                    onChange?.(optionValue);
+                    if (detailsRef.current) {
+                      detailsRef.current.open = false;
+                    }
+                  }}
+                >
+                  {optionLabel}
+                </button>
+              );
+            })()
           ))}
         </div>
       </details>
