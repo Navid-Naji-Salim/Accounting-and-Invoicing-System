@@ -27,6 +27,7 @@ const unitOptions = ["box", "cm", "dz", "ft", "g", "in", "kg", "km", "lb", "mg",
 export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: ItemsPageProps) => {
   const [message, setMessage] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [salesEnabled, setSalesEnabled] = useState(true);
   const [purchaseEnabled, setPurchaseEnabled] = useState(true);
   const [unit, setUnit] = useState("");
@@ -98,8 +99,10 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               </div>
               <DropdownField
                 name="unit"
+                openDropdown={openDropdown}
                 options={unitOptions}
                 placeholder="Select a unit"
+                setOpenDropdown={setOpenDropdown}
                 value={unit}
                 onChange={setUnit}
               />
@@ -124,8 +127,8 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               title="Sales information"
             >
               <MoneyField disabled={!salesEnabled} label="Selling price" name="salesPrice" required={salesEnabled} />
-              <DropdownField disabled={!salesEnabled} label="Account" name="salesAccount" options={salesAccounts} defaultValue="general income" required={salesEnabled} resetVersion={resetVersion} />
-              <DropdownField disabled={!salesEnabled} label="Tax" name="salesTax" placeholder="Select a tax" options={taxOptions} resetVersion={resetVersion} />
+              <DropdownField disabled={!salesEnabled} label="Account" name="salesAccount" openDropdown={openDropdown} options={salesAccounts} defaultValue="general income" required={salesEnabled} resetVersion={resetVersion} setOpenDropdown={setOpenDropdown} />
+              <DropdownField disabled={!salesEnabled} label="Tax" name="salesTax" openDropdown={openDropdown} placeholder="Select a tax" options={taxOptions} resetVersion={resetVersion} setOpenDropdown={setOpenDropdown} />
               <div className="field item-description-field">
                 <label htmlFor="salesDescription">Description</label>
                 <textarea disabled={!salesEnabled} id="salesDescription" name="salesDescription" placeholder="Customer-facing description" />
@@ -139,15 +142,17 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               title="Purchase information"
             >
               <MoneyField disabled={!purchaseEnabled} label="Cost price" name="unitCost" required={purchaseEnabled} />
-              <DropdownField disabled={!purchaseEnabled} label="Account" name="purchaseAccount" options={purchaseAccounts} defaultValue="Cost of Goods Sold" required={purchaseEnabled} resetVersion={resetVersion} />
-              <DropdownField disabled={!purchaseEnabled} label="Tax" name="purchaseTax" placeholder="Select a tax" options={taxOptions} resetVersion={resetVersion} />
+              <DropdownField disabled={!purchaseEnabled} label="Account" name="purchaseAccount" openDropdown={openDropdown} options={purchaseAccounts} defaultValue="Cost of Goods Sold" required={purchaseEnabled} resetVersion={resetVersion} setOpenDropdown={setOpenDropdown} />
+              <DropdownField disabled={!purchaseEnabled} label="Tax" name="purchaseTax" openDropdown={openDropdown} placeholder="Select a tax" options={taxOptions} resetVersion={resetVersion} setOpenDropdown={setOpenDropdown} />
               <DropdownField
                 disabled={!purchaseEnabled}
                 label="Preferred vendor"
                 name="preferredVendorId"
+                openDropdown={openDropdown}
                 placeholder="Select a vendor"
                 options={vendors.map((vendor) => ({ label: vendor.displayName, value: vendor.id }))}
                 resetVersion={resetVersion}
+                setOpenDropdown={setOpenDropdown}
               />
               <div className="field item-description-field">
                 <label htmlFor="purchaseDescription">Description</label>
@@ -236,6 +241,8 @@ type SelectFieldProps = {
   required?: boolean;
   disabled?: boolean;
   resetVersion?: number;
+  openDropdown: string | null;
+  setOpenDropdown: (name: string | null) => void;
 };
 
 const DropdownField = ({
@@ -247,6 +254,8 @@ const DropdownField = ({
   required,
   disabled,
   resetVersion,
+  openDropdown,
+  setOpenDropdown,
   value: controlledValue,
   onChange,
 }: SelectFieldProps & { value?: string; onChange?: (value: string) => void }) => {
@@ -266,18 +275,35 @@ const DropdownField = ({
   });
   const selectedLabel =
     typeof selectedOption === "string" ? selectedOption : selectedOption?.label;
+  const isOpen = openDropdown === name;
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!isOpen || detailsRef.current?.contains(event.target as Node)) {
+        return;
+      }
+
+      setOpenDropdown(null);
+    };
+
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [isOpen, setOpenDropdown]);
 
   return (
     <div className="field dropdown-field">
       <label htmlFor={`${name}-value`}>{label}</label>
       <input id={`${name}-value`} name={name} type="hidden" value={selectedValue} required={required} />
-      <details ref={detailsRef} className="select-menu">
+      <details ref={detailsRef} className="select-menu" open={isOpen}>
         <summary
           aria-disabled={disabled}
           onClick={(event) => {
+            event.preventDefault();
             if (disabled) {
-              event.preventDefault();
+              return;
             }
+
+            setOpenDropdown(isOpen ? null : name);
           }}
         >
           {selectedLabel || placeholder}
@@ -299,9 +325,7 @@ const DropdownField = ({
                       setInternalValue(optionValue);
                     }
                     onChange?.(optionValue);
-                    if (detailsRef.current) {
-                      detailsRef.current.open = false;
-                    }
+                    setOpenDropdown(null);
                   }}
                 >
                   {optionLabel}
