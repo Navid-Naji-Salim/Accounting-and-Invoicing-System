@@ -571,24 +571,33 @@ textarea:focus {
 }
 
 .compact-item-form {
-  padding: 0.95rem;
+  padding: 1rem;
 }
 
 .item-compact-grid {
   display: grid;
-  grid-template-columns: minmax(15rem, 0.82fr) repeat(2, minmax(18rem, 1fr));
-  gap: 0.9rem;
-  align-items: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: stretch;
 }
 
 .item-basics,
 .compact-item-form .item-info-section {
   display: grid;
-  gap: 0.7rem;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.58);
+  height: 100%;
+  gap: 0.78rem;
+  border: 1px solid rgba(20, 33, 61, 0.18);
+  border-top: 4px solid rgba(33, 150, 243, 0.64);
+  border-radius: 18px;
+  padding: 0.95rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.7)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.item-basics {
+  grid-template-rows: auto auto auto minmax(8.75rem, 1fr);
 }
 
 .radio-field {
@@ -730,23 +739,27 @@ textarea:focus {
 }
 
 .compact-image-drop {
-  width: min(100%, 9rem);
-  aspect-ratio: 1;
-  min-height: 0;
-  justify-self: center;
-  padding: 0.7rem;
-  border-radius: 18px;
+  width: 100%;
+  min-height: 9rem;
+  justify-self: stretch;
+  align-self: stretch;
+  padding: 1rem;
+  border: 1.5px dashed rgba(20, 33, 61, 0.26);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(241, 245, 249, 0.64)),
+    rgba(255, 255, 255, 0.66);
 }
 
 .compact-image-drop .image-glyph {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
 }
 
 .compact-image-drop .image-glyph svg {
-  width: 27px;
-  height: 27px;
+  width: 32px;
+  height: 32px;
 }
 
 .image-glyph {
@@ -786,8 +799,8 @@ textarea:focus {
 }
 
 .compact-item-form .item-info-section {
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(20, 33, 61, 0.18);
+  padding-bottom: 0.95rem;
 }
 
 .compact-item-form .item-info-section.is-disabled {
