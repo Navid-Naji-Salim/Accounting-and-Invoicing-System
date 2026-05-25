@@ -856,8 +856,8 @@ textarea:focus {
     "price"
     "account"
     "tax"
-    "vendor"
-    "description";
+    "description"
+    "vendor";
 }
 
 .compact-item-form .item-info-section.is-purchase .item-info-fields {
