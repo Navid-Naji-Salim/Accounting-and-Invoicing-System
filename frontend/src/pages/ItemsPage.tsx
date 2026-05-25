@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { api, ApiError } from "../api";
 import { Field } from "../components/Field";
@@ -13,16 +13,23 @@ type ItemsPageProps = {
   onRefresh: () => Promise<void>;
 };
 
-const salesAccounts = ["Sales", "Service Revenue", "Product Revenue", "Other Income"];
+const salesAccounts = [
+  "discount",
+  "general income",
+  "interest income",
+  "late fee income",
+  "other charges",
+];
 const purchaseAccounts = ["Cost of Goods Sold", "Supplies Expense", "Inventory Asset", "Other Expense"];
 const taxOptions = ["Exempt", "Standard Tax", "Reduced Tax", "Out of Scope"];
-const unitOptions = ["pcs", "box", "kg", "hour", "month"];
+const unitOptions = ["box", "cm", "dz", "ft", "g", "in", "kg", "km", "lb", "mg", "ml", "m", "pcs"];
 
 export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: ItemsPageProps) => {
   const [message, setMessage] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [salesEnabled, setSalesEnabled] = useState(true);
   const [purchaseEnabled, setPurchaseEnabled] = useState(true);
+  const [unit, setUnit] = useState("");
 
   const deleteItem = async (item: Item) => {
     const confirmed = window.confirm(`Delete ${item.name}?`);
@@ -56,6 +63,7 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
             try {
               await api.createItem(token, Object.fromEntries(new FormData(form)));
               form.reset();
+              setUnit("");
               setSalesEnabled(true);
               setPurchaseEnabled(true);
               await onRefresh();
@@ -86,7 +94,13 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
                   Service
                 </label>
               </div>
-              <SelectField label="Unit" name="unit" placeholder="Select a unit" options={unitOptions} />
+              <UnitField
+                name="unit"
+                options={unitOptions}
+                placeholder="Select a unit"
+                value={unit}
+                onChange={setUnit}
+              />
               <label className="image-drop compact-image-drop">
                 <input type="file" accept="image/*" aria-label="Item image" />
                 <span className="image-glyph" aria-hidden="true">
@@ -108,7 +122,7 @@ export const ItemsPage = ({ dataError, items, token, vendors, onRefresh }: Items
               title="Sales information"
             >
               <MoneyField disabled={!salesEnabled} label="Selling price" name="salesPrice" required={salesEnabled} />
-              <SelectField disabled={!salesEnabled} label="Account" name="salesAccount" options={salesAccounts} defaultValue="Sales" required={salesEnabled} />
+              <SelectField disabled={!salesEnabled} label="Account" name="salesAccount" options={salesAccounts} defaultValue="general income" required={salesEnabled} />
               <SelectField disabled={!salesEnabled} label="Tax" name="salesTax" placeholder="Select a tax" options={taxOptions} />
               <div className="field item-description-field">
                 <label htmlFor="salesDescription">Description</label>
@@ -238,6 +252,45 @@ const SelectField = ({ label, name, options, defaultValue = "", placeholder, req
     </select>
   </div>
 );
+
+type UnitFieldProps = {
+  name: string;
+  options: string[];
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+};
+
+const UnitField = ({ name, options, placeholder, value, onChange }: UnitFieldProps) => {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  return (
+    <div className="field unit-field">
+      <label htmlFor={`${name}-value`}>Unit</label>
+      <input id={`${name}-value`} name={name} type="hidden" value={value} />
+      <details ref={detailsRef} className="unit-menu">
+        <summary>{value || placeholder}</summary>
+        <div className="unit-options">
+          {options.map((option) => (
+            <button
+              className={option === value ? "is-selected" : ""}
+              key={option}
+              type="button"
+              onClick={() => {
+                onChange(option);
+                if (detailsRef.current) {
+                  detailsRef.current.open = false;
+                }
+              }}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </details>
+    </div>
+  );
+};
 
 type MoneyFieldProps = {
   label: string;

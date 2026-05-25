@@ -14,11 +14,33 @@ import {
 export const itemsRouter = Router();
 
 const itemTypes = new Set(["goods", "service"]);
+const unitOptions = new Set(["box", "cm", "dz", "ft", "g", "in", "kg", "km", "lb", "mg", "ml", "m", "pcs"]);
+const salesAccountOptions = new Set([
+  "discount",
+  "general income",
+  "interest income",
+  "late fee income",
+  "other charges",
+]);
 
 const itemType = (body: Record<string, unknown>) => {
   const value = optionalString(body, "itemType") ?? "goods";
   if (!itemTypes.has(value)) {
     throw new ApiError(400, "itemType must be goods or service.");
+  }
+
+  return value;
+};
+
+const optionalChoice = (
+  body: Record<string, unknown>,
+  field: string,
+  allowedValues: Set<string>,
+  defaultValue?: string,
+) => {
+  const value = optionalString(body, field) ?? defaultValue ?? null;
+  if (value && !allowedValues.has(value)) {
+    throw new ApiError(400, `${field} is not a supported option.`);
   }
 
   return value;
@@ -62,12 +84,12 @@ itemsRouter.post("/", async (req, res, next) => {
         name: requiredString(body, "name"),
         sku: optionalString(body, "sku"),
         itemType: itemType(body),
-        unit: optionalString(body, "unit"),
+        unit: optionalChoice(body, "unit", unitOptions),
         imageUrl: optionalString(body, "imageUrl"),
         description: optionalString(body, "description"),
         salesEnabled: booleanField(body, "salesEnabled", true),
         salesPrice: optionalMoney(body, "salesPrice"),
-        salesAccount: optionalString(body, "salesAccount") ?? "Sales",
+        salesAccount: optionalChoice(body, "salesAccount", salesAccountOptions, "general income") ?? "general income",
         salesTax: optionalString(body, "salesTax"),
         salesDescription: optionalString(body, "salesDescription"),
         purchaseEnabled: booleanField(body, "purchaseEnabled", true),
@@ -97,7 +119,7 @@ itemsRouter.patch("/:id", async (req, res, next) => {
         ...(body.name !== undefined ? { name: requiredString(body, "name") } : {}),
         ...(body.sku !== undefined ? { sku: optionalString(body, "sku") } : {}),
         ...(body.itemType !== undefined ? { itemType: itemType(body) } : {}),
-        ...(body.unit !== undefined ? { unit: optionalString(body, "unit") } : {}),
+        ...(body.unit !== undefined ? { unit: optionalChoice(body, "unit", unitOptions) } : {}),
         ...(body.imageUrl !== undefined ? { imageUrl: optionalString(body, "imageUrl") } : {}),
         ...(body.description !== undefined
           ? { description: optionalString(body, "description") }
@@ -107,7 +129,7 @@ itemsRouter.patch("/:id", async (req, res, next) => {
           : {}),
         ...(body.salesPrice !== undefined ? { salesPrice: optionalMoney(body, "salesPrice") } : {}),
         ...(body.salesAccount !== undefined
-          ? { salesAccount: optionalString(body, "salesAccount") ?? "Sales" }
+          ? { salesAccount: optionalChoice(body, "salesAccount", salesAccountOptions, "general income") ?? "general income" }
           : {}),
         ...(body.salesTax !== undefined ? { salesTax: optionalString(body, "salesTax") } : {}),
         ...(body.salesDescription !== undefined

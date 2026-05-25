@@ -167,7 +167,6 @@ textarea:focus {
   color: white;
   background: var(--accent);
   font-weight: 800;
-  box-shadow: 0 14px 28px rgba(0, 183, 255, 0.09);
 }
 
 .button:hover {
@@ -621,6 +620,68 @@ textarea:focus {
   width: 1rem;
   height: 1rem;
   accent-color: var(--accent);
+}
+
+.unit-menu {
+  position: relative;
+}
+
+.unit-menu summary {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 0.64rem 0.78rem;
+  color: var(--ink);
+  background:
+    linear-gradient(45deg, transparent 50%, #64748b 50%) right 1.1rem center / 0.42rem 0.42rem no-repeat,
+    linear-gradient(135deg, #64748b 50%, transparent 50%) right 0.82rem center / 0.42rem 0.42rem no-repeat,
+    rgba(255, 255, 255, 0.96);
+  cursor: pointer;
+  list-style: none;
+}
+
+.unit-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.unit-menu[open] summary {
+  border-color: rgba(0, 183, 255, 0.72);
+  box-shadow: 0 0 0 4px rgba(0, 183, 255, 0.06);
+}
+
+.unit-options {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  display: grid;
+  max-height: 9.5rem;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 0.35rem;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
+}
+
+.unit-options button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  color: var(--ink);
+  background: transparent;
+  font-weight: 800;
+  text-align: left;
+}
+
+.unit-options button:hover,
+.unit-options button.is-selected {
+  color: #075985;
+  background: #e0f2fe;
 }
 
 .image-drop {
